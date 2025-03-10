@@ -5,25 +5,29 @@ import log from './utils/log.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Configuración de __dirname para ES modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const app = express();
 const port = 3000;
 
 // Middleware
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, 'views')));
 
-// Default route
+// Configuración de archivos estáticos
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Ruta por defecto
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', '../../public/login.html'));
+  res.redirect('/login.html');
 });
 
-// Routes
+// Rutas de autenticación
 app.use('/auth', authRoutes);
 
-// Initialize database and start server
+// Inicializar base de datos y servidor
 initDatabase();
 app.listen(port, () => {
-  log(`Server running at http://localhost:${port}`);
+  log(`Servidor ejecutándose en http://localhost:${port}`);
 });
