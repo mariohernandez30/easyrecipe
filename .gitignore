@@ -1,4 +1,6 @@
 bun.lockb
+bun.lock
+db/users.sqlite
 
 # Logs
 logs

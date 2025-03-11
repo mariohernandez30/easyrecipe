@@ -3,21 +3,20 @@
   "module": "src/index.js",
   "type": "module",
   "scripts": {
-    "lint": "npx eslint .",
-    "lint:fix": "npx eslint . --fix",
-    "dev": "npx eslint . --fix && bun run src/index.js",
+    "lint": "bun eslint .",
+    "lint:fix": "bun eslint . --fix",
+    "dev": "bun eslint . --fix && bun --watch src/index.js",
     "start": "bun run src/index.js"
   },
   "dependencies": {
-    "ejs": "^3.1.10",
     "express": "^4.21.2",
     "sqlite3": "^5.1.7",
     "bcrypt": "^5.1.1"
   },
   "devDependencies": {
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
-    "prettier": "^3.4.2"
+    "prettier": "^3.5.3"
   }
 }
