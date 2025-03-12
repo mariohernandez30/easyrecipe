@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Asistente de Recetas - EasyRecipe</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .recipe-form {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+
+      .ingredient-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .ingredient-tag {
+        background-color: #f1f9ff;
+        border: 1px solid #3498db;
+        border-radius: 20px;
+        padding: 0.3rem 0.8rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+      }
+
+      .ingredient-tag button {
+        background: none;
+        border: none;
+        color: #e74c3c;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 5px;
+        padding: 0 5px;
+      }
+
+      .ingredient-input-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1rem;
+      }
+
+      .ingredient-input-group input {
+        flex: 1;
+      }
+
+      .ingredient-input-group button {
+        width: auto;
+        margin-top: 0;
+      }
+
+      .recipe-result {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: left;
+        display: none;
+      }
+
+      .recipe-result h2 {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .recipe-summary {
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        color: #555;
+      }
+
+      .recipe-section {
+        margin-bottom: 1.5rem;
+      }
+
+      .recipe-section h3 {
+        color: #3498db;
+        margin-bottom: 0.8rem;
+      }
+
+      .recipe-ingredients li,
+      .recipe-instructions li,
+      .recipe-tips li {
+        margin-bottom: 0.5rem;
+      }
+
+      .recipe-meta {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        color: #666;
+      }
+
+      .recipe-meta div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .loading-spinner {
+        display: none;
+        margin: 2rem auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="app-container">
+        <h1>Asistente de Recetas</h1>
+        <p>
+          Encuentra recetas deliciosas basadas en los ingredientes que tienes
+          disponibles
+        </p>
+
+        <div class="recipe-form">
+          <h3>¿Qué te gustaría cocinar hoy?</h3>
+
+          <div class="form-group">
+            <label for="ingredient-input">Ingredientes disponibles</label>
+            <div class="ingredient-input-group">
+              <input
+                type="text"
+                id="ingredient-input"
+                placeholder="Ej: tomate, cebolla..."
+              />
+              <button id="add-ingredient" class="btn">Agregar</button>
+            </div>
+            <div id="ingredients-list" class="ingredient-list"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="cuisine">Tipo de cocina (opcional)</label>
+            <select id="cuisine" class="form-select">
+              <option value="">Cualquiera</option>
+              <option value="mexicana">Mexicana</option>
+              <option value="italiana">Italiana</option>
+              <option value="española">Española</option>
+              <option value="asiática">Asiática</option>
+              <option value="mediterránea">Mediterránea</option>
+              <option value="americana">Americana</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="difficulty">Nivel de dificultad</label>
+            <select id="difficulty" class="form-select">
+              <option value="fácil">Fácil</option>
+              <option value="media" selected>Media</option>
+              <option value="difícil">Difícil</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dietary">Restricciones dietéticas (opcional)</label>
+            <select id="dietary" class="form-select">
+              <option value="">Ninguna</option>
+              <option value="vegetariano">Vegetariano</option>
+              <option value="vegano">Vegano</option>
+              <option value="sin gluten">Sin gluten</option>
+              <option value="sin lactosa">Sin lactosa</option>
+              <option value="bajo en calorías">Bajo en calorías</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="prep-time"
+              >Tiempo máximo de preparación (minutos)</label
+            >
+            <input type="number" id="prep-time" min="5" max="180" value="30" />
+          </div>
+
+          <button id="generate-recipe" class="btn">Generar Receta</button>
+        </div>
+
+        <div id="loading-spinner" class="loading-spinner"></div>
+
+        <div id="recipe-result" class="recipe-result">
+          <h2 id="recipe-title">Título de la Receta</h2>
+          <p id="recipe-summary" class="recipe-summary"></p>
+
+          <div class="recipe-meta">
+            <div>
+              <span>⏱️ Tiempo:</span>
+              <span id="recipe-time"></span> minutos
+            </div>
+            <div>
+              <span>📊 Dificultad:</span>
+              <span id="recipe-difficulty"></span>
+            </div>
+          </div>
+
+          <div class="recipe-section">
+            <h3>Ingredientes</h3>
+            <ul id="recipe-ingredients" class="recipe-ingredients"></ul>
+          </div>
+
+          <div class="recipe-section">
+            <h3>Instrucciones</h3>
+            <ol id="recipe-instructions" class="recipe-instructions"></ol>
+          </div>
+
+          <div class="recipe-section">
+            <h3>Consejos del Chef</h3>
+            <ul id="recipe-tips" class="recipe-tips"></ul>
+          </div>
+        </div>
+
+        <p class="auth-link">
+          <a href="/dashboard">Volver al Dashboard</a>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Verificar si hay un token JWT almacenado (autenticación)
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // Redireccionar al login si no hay token
+        window.location.href = '/login';
+      }
+
+      // Elementos del DOM
+      const addIngredientBtn = document.getElementById('add-ingredient');
+      const ingredientInput = document.getElementById('ingredient-input');
+      const ingredientsList = document.getElementById('ingredients-list');
+      const generateBtn = document.getElementById('generate-recipe');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      const recipeResult = document.getElementById('recipe-result');
+
+      // Lista de ingredientes
+      const ingredients = [];
+
+      // Función para agregar un ingrediente
+      function addIngredient() {
+        const ingredient = ingredientInput.value.trim();
+        if (ingredient && !ingredients.includes(ingredient)) {
+          ingredients.push(ingredient);
+          renderIngredients();
+          ingredientInput.value = '';
+        }
+        ingredientInput.focus();
+      }
+
+      // Función para eliminar un ingrediente
+      function removeIngredient(index) {
+        ingredients.splice(index, 1);
+        renderIngredients();
+      }
+
+      // Renderizar la lista de ingredientes
+      function renderIngredients() {
+        ingredientsList.innerHTML = '';
+
+        ingredients.forEach((ingredient, index) => {
+          const tag = document.createElement('div');
+          tag.className = 'ingredient-tag';
+          tag.innerHTML = `
+          ${ingredient}
+          <button onclick="removeIngredient(${index})">×</button>
+        `;
+          ingredientsList.appendChild(tag);
+        });
+      }
+
+      // Evento para agregar ingrediente
+      addIngredientBtn.addEventListener('click', addIngredient);
+      ingredientInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addIngredient();
+        }
+      });
+
+      // Exponer la función de eliminación de ingredientes al ámbito global
+      window.removeIngredient = removeIngredient;
+
+      // Generar receta
+      generateBtn.addEventListener('click', async () => {
+        if (ingredients.length === 0) {
+          alert('Por favor, agrega al menos un ingrediente');
+          return;
+        }
+
+        // Mostrar spinner y ocultar resultado anterior
+        loadingSpinner.style.display = 'block';
+        recipeResult.style.display = 'none';
+
+        // Obtener valores del formulario
+        const cuisine = document.getElementById('cuisine').value;
+        const difficulty = document.getElementById('difficulty').value;
+        const dietaryRestrictions = document.getElementById('dietary').value;
+        const prepTime =
+          parseInt(document.getElementById('prep-time').value) || 30;
+
+        try {
+          // Llamar a la API
+          const response = await fetch('/api/recipes/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              ingredients,
+              cuisine,
+              difficulty,
+              dietaryRestrictions,
+              prepTime,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success && data.recipe) {
+            // Mostrar la receta
+            renderRecipe(data.recipe);
+          } else {
+            alert(
+              data.message || 'Error al generar la receta. Inténtalo de nuevo.'
+            );
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error de conexión. Por favor, inténtalo más tarde.');
+        } finally {
+          loadingSpinner.style.display = 'none';
+        }
+      });
+
+      // Renderizar la receta generada
+      function renderRecipe(recipe) {
+        // Rellenar datos básicos
+        document.getElementById('recipe-title').textContent = recipe.title;
+        document.getElementById('recipe-summary').textContent = recipe.summary;
+        document.getElementById('recipe-time').textContent =
+          recipe.preparationTime;
+        document.getElementById('recipe-difficulty').textContent =
+          recipe.difficulty;
+
+        // Rellenar ingredientes
+        const ingredientsUl = document.getElementById('recipe-ingredients');
+        ingredientsUl.innerHTML = '';
+        recipe.ingredients.forEach((ingredient) => {
+          const li = document.createElement('li');
+          li.textContent = ingredient;
+          ingredientsUl.appendChild(li);
+        });
+
+        // Rellenar instrucciones
+        const instructionsOl = document.getElementById('recipe-instructions');
+        instructionsOl.innerHTML = '';
+        recipe.instructions.forEach((instruction) => {
+          const li = document.createElement('li');
+          li.textContent = instruction;
+          instructionsOl.appendChild(li);
+        });
+
+        // Rellenar consejos
+        const tipsUl = document.getElementById('recipe-tips');
+        tipsUl.innerHTML = '';
+        if (recipe.tips && recipe.tips.length) {
+          recipe.tips.forEach((tip) => {
+            const li = document.createElement('li');
+            li.textContent = tip;
+            tipsUl.appendChild(li);
+          });
+        } else {
+          tipsUl.innerHTML =
+            '<li>No hay consejos disponibles para esta receta.</li>';
+        }
+
+        // Mostrar el resultado
+        recipeResult.style.display = 'block';
+
+        // Desplazarse hasta el resultado
+        recipeResult.scrollIntoView({ behavior: 'smooth' });
+      }
+    </script>
+  </body>
+</html>

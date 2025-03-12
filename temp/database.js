@@ -1,6 +1,6 @@
-import sqlite3 from 'sqlite3';
 import bcrypt from 'bcrypt';
-import log from '../utils/log.js';
+import sqlite3 from 'sqlite3';
+import { log } from '../utils.js';
 
 const db = new sqlite3.Database('./db/users.sqlite', (err) => {
   if (err) {
@@ -9,7 +9,6 @@ const db = new sqlite3.Database('./db/users.sqlite', (err) => {
   log('Connected to the SQLite database');
 });
 
-// Initialize database with users table
 export function initDatabase() {
   const createTableSQL = `
     CREATE TABLE IF NOT EXISTS users (
@@ -30,7 +29,6 @@ export function initDatabase() {
   });
 }
 
-// Create new user
 export async function createUser(username, email, password) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -50,7 +48,6 @@ export async function createUser(username, email, password) {
   });
 }
 
-// Verify user login
 export async function verifyUser(email, password) {
   return new Promise((resolve, reject) => {
     db.get(

@@ -1,8 +1,8 @@
-import log from '../utils/log.js';
+import { $try, log } from '../utils.js';
 import db from './dbConnection.js';
 
 export async function deleteUser(userId) {
-  try {
+  const [error, result] = await $try(async () => {
     return new Promise((resolve, reject) => {
       db.run('DELETE FROM users WHERE id = ?', [userId], function (err) {
         if (err) {
@@ -22,8 +22,12 @@ export async function deleteUser(userId) {
         resolve(true);
       });
     });
-  } catch (error) {
+  });
+
+  if (error) {
     log(`Error al eliminar usuario: ${error.message}`, { isError: true });
     throw error;
   }
+
+  return result;
 }

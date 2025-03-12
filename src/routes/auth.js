@@ -3,67 +3,102 @@ import { createUser } from '../data/userCreate.js';
 import { deleteUser } from '../data/userDelete.js';
 import { verifyUser } from '../data/userVerify.js';
 import { generateToken, verifyToken } from '../middleware/auth.js';
-import log from '../utils/log.js';
+import { $try, log } from '../utils.js';
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+function validateRegisterData(userData) {
+  const { username, email, password } = userData;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        success: false,
+  if (!username || !email || !password) {
+    return {
+      isValid: false,
+      error: {
+        status: 400,
         message: 'Todos los campos son requeridos',
-      });
-    }
+      },
+    };
+  }
 
-    if (password.length < 6) {
-      return res.status(400).json({
-        success: false,
+  if (password.length < 6) {
+    return {
+      isValid: false,
+      error: {
+        status: 400,
         message: 'La contraseña debe tener al menos 6 caracteres',
-      });
-    }
+      },
+    };
+  }
 
-    await createUser(username, email, password);
+  return { isValid: true };
+}
 
-    res.status(201).json({
+function validateLoginData(userData) {
+  const { email, password } = userData;
+
+  if (!email || !password) {
+    return {
+      isValid: false,
+      error: {
+        status: 400,
+        message: 'Email y contraseña son requeridos',
+      },
+    };
+  }
+
+  return { isValid: true };
+}
+
+function handleApiError(res, error, defaultMessage) {
+  log(`Error: ${error.message}`, { isError: true });
+  res.status(500).json({
+    success: false,
+    message: error.message || defaultMessage,
+  });
+}
+
+async function processRegister(userData) {
+  const validationResult = validateRegisterData(userData);
+  if (!validationResult.isValid) {
+    return validationResult.error;
+  }
+
+  const { username, email, password } = userData;
+  await createUser(username, email, password);
+
+  return {
+    status: 201,
+    data: {
       success: true,
       message: 'Usuario registrado exitosamente',
-    });
-  } catch (error) {
-    log(`Error en registro: ${error.message}`, { isError: true });
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Error al registrar usuario',
-    });
+    },
+  };
+}
+
+async function processLogin(userData) {
+  const validationResult = validateLoginData(userData);
+  if (!validationResult.isValid) {
+    return validationResult.error;
   }
-});
 
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = userData;
+  const user = await verifyUser(email, password);
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email y contraseña son requeridos',
-      });
-    }
-
-    const user = await verifyUser(email, password);
-
-    if (!user) {
-      return res.status(401).json({
+  if (!user) {
+    return {
+      status: 401,
+      data: {
         success: false,
         message: 'Credenciales inválidas',
-      });
-    }
+      },
+    };
+  }
 
-    // Generar token JWT
-    const token = generateToken(user);
+  const token = generateToken(user);
 
-    res.status(200).json({
+  return {
+    status: 200,
+    data: {
       success: true,
       message: 'Inicio de sesión exitoso',
       token,
@@ -72,17 +107,45 @@ router.post('/login', async (req, res) => {
         username: user.username,
         email: user.email,
       },
-    });
-  } catch (error) {
-    log(`Error en login: ${error.message}`, { isError: true });
-    res.status(500).json({
-      success: false,
-      message: 'Error al iniciar sesión',
-    });
+    },
+  };
+}
+
+async function processDeleteAccount(userId) {
+  await deleteUser(userId);
+
+  return {
+    status: 200,
+    data: {
+      success: true,
+      message: 'Cuenta eliminada exitosamente',
+    },
+  };
+}
+
+// Rutas
+router.post('/register', async (req, res) => {
+  const [error] = await $try(async () => {
+    const response = await processRegister(req.body);
+    return res.status(response.status).json(response.data);
+  });
+
+  if (error) {
+    handleApiError(res, error, 'Error al registrar usuario');
   }
 });
 
-// Ruta para cerrar sesión (no requiere operación en el servidor con JWT)
+router.post('/login', async (req, res) => {
+  const [error] = await $try(async () => {
+    const response = await processLogin(req.body);
+    return res.status(response.status).json(response.data);
+  });
+
+  if (error) {
+    handleApiError(res, error, 'Error al iniciar sesión');
+  }
+});
+
 router.post('/logout', (req, res) => {
   return res.status(200).json({
     success: true,
@@ -90,27 +153,18 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// Ruta para eliminar cuenta (requiere autenticación)
 router.delete('/delete-account', verifyToken, async (req, res) => {
-  try {
+  const [error] = await $try(async () => {
     const userId = req.user.id;
+    const response = await processDeleteAccount(userId);
+    return res.status(response.status).json(response.data);
+  });
 
-    await deleteUser(userId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Cuenta eliminada exitosamente',
-    });
-  } catch (error) {
-    log(`Error al eliminar cuenta: ${error.message}`, { isError: true });
-    res.status(500).json({
-      success: false,
-      message: 'Error al eliminar la cuenta',
-    });
+  if (error) {
+    handleApiError(res, error, 'Error al eliminar la cuenta');
   }
 });
 
-// Ruta para verificar si el token es válido
 router.get('/verify', verifyToken, (req, res) => {
   res.status(200).json({
     success: true,

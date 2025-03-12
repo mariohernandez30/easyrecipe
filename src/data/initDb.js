@@ -1,13 +1,15 @@
-import log from '../utils/log.js';
+import { $try, log } from '../utils.js';
 import db from './dbConnection.js';
 import { CREATE_USERS_TABLE } from './queries.js';
 
-export function initDatabase() {
-  try {
+export async function initDatabase() {
+  const [error] = await $try(async () => {
     // Ejecutar la creación de la tabla
     db.exec(CREATE_USERS_TABLE);
     log('Base de datos inicializada. Tabla de usuarios lista.');
-  } catch (error) {
+  });
+
+  if (error) {
     log(`Error al inicializar la base de datos: ${error.message}`, {
       isError: true,
     });

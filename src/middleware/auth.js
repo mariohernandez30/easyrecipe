@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../setup.js';
-import log from '../utils/log.js';
+import { $try, log } from '../utils.js';
 
 export const generateToken = (user) => {
   const payload = {
@@ -9,19 +9,22 @@ export const generateToken = (user) => {
     email: user.email,
   };
 
-  try {
-    const token = jwt.sign(payload, config.jwt.secret, {
+  const [error, token] = $try(() => {
+    return jwt.sign(payload, config.jwt.secret, {
       expiresIn: config.jwt.expiresIn,
     });
-    return token;
-  } catch (error) {
+  });
+
+  if (error) {
     log(`Error al generar token: ${error.message}`, { isError: true });
     throw error;
   }
+
+  return token;
 };
 
-export const verifyToken = (req, res, next) => {
-  try {
+export const verifyToken = async (req, res, next) => {
+  const [error] = await $try(async () => {
     // Solo usamos el header de Authorization
     const authHeader = req.headers.authorization;
 
@@ -44,7 +47,9 @@ export const verifyToken = (req, res, next) => {
       req.user = decoded;
       next();
     });
-  } catch (error) {
+  });
+
+  if (error) {
     log(`Error al verificar token: ${error.message}`, { isError: true });
     return res
       .status(500)

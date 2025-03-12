@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
-import log from '../utils/log.js';
+import { $try, log } from '../utils.js';
 import db from './dbConnection.js';
 import { INSERT_USER } from './queries.js';
 
 export async function createUser(username, email, password) {
-  try {
+  const [error, result] = await $try(async () => {
     // Verificar si el usuario ya existe
     const userExists = await new Promise((resolve, reject) => {
       db.get(
@@ -41,8 +41,12 @@ export async function createUser(username, email, password) {
         resolve(this.lastID);
       });
     });
-  } catch (error) {
+  });
+
+  if (error) {
     log(`Error al crear usuario: ${error.message}`, { isError: true });
     throw error;
   }
+
+  return result;
 }

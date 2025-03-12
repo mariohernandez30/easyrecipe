@@ -16,7 +16,7 @@ export default [
       prettier: prettierPlugin,
     },
     rules: {
-      ...prettier.rules, // Desactiva reglas conflictivas con Prettier
+      ...prettier.rules,
       'prettier/prettier': [
         'error',
         {
