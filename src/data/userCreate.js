@@ -1,7 +1,7 @@
-import db from './dbConnection.js';
 import bcrypt from 'bcrypt';
-import { INSERT_USER } from './queries.js';
 import log from '../utils/log.js';
+import db from './dbConnection.js';
+import { INSERT_USER } from './queries.js';
 
 export async function createUser(username, email, password) {
   try {

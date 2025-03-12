@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - EasyRecipe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="app-container">
+        <h1>Mi Dashboard</h1>
+
+        <div class="user-info">
+          <h2>Bienvenido, <span id="username">Usuario</span></h2>
+          <p>Email: <span id="email">correo@ejemplo.com</span></p>
+        </div>
+
+        <div class="dashboard-actions">
+          <h3>Menú de opciones</h3>
+          <div class="action-buttons">
+            <button id="btn-logout" class="btn">Cerrar Sesión</button>
+            <button id="btn-delete-account" class="btn btn-danger">
+              Eliminar Cuenta
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Verificar si hay un token JWT almacenado
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // Redireccionar al login si no hay token
+        window.location.href = '/login';
+      }
+
+      // Obtener información del usuario
+      const userData = JSON.parse(localStorage.getItem('user'));
+      if (userData) {
+        document.getElementById('username').textContent = userData.username;
+        document.getElementById('email').textContent = userData.email;
+      }
+
+      // Funcionalidad para cerrar sesión
+      document
+        .getElementById('btn-logout')
+        .addEventListener('click', async () => {
+          try {
+            const response = await fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+              // Limpiar almacenamiento local
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              // Redireccionar al login
+              window.location.href = '/login';
+            }
+          } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            alert('Error al cerrar sesión. Intente nuevamente.');
+          }
+        });
+
+      // Funcionalidad para eliminar cuenta
+      document
+        .getElementById('btn-delete-account')
+        .addEventListener('click', async () => {
+          if (
+            confirm(
+              '¿Está seguro que desea eliminar su cuenta? Esta acción no se puede deshacer.'
+            )
+          ) {
+            try {
+              const response = await fetch('/api/auth/delete-account', {
+                method: 'DELETE',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              const data = await response.json();
+              if (data.success) {
+                alert('Cuenta eliminada exitosamente.');
+                // Limpiar almacenamiento local
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                // Redireccionar al registro
+                window.location.href = '/register';
+              } else {
+                alert(`Error: ${data.message}`);
+              }
+            } catch (error) {
+              console.error('Error al eliminar cuenta:', error);
+              alert('Error al eliminar cuenta. Intente nuevamente.');
+            }
+          }
+        });
+    </script>
+  </body>
+</html>

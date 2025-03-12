@@ -1,5 +1,5 @@
-import db from './dbConnection.js';
 import bcrypt from 'bcrypt';
+import db from './dbConnection.js';
 import { SELECT_USER_BY_EMAIL } from './queries.js';
 
 export async function verifyUser(email, password) {

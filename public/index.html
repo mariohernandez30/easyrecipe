@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EasyRecipe - Bienvenido</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="app-container">
+        <h1>EasyRecipe</h1>
+        <p>Tu asistente para recetas fáciles y deliciosas</p>
+        <div class="loading-indicator">
+          <p>Cargando...</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Verificar si hay un token JWT almacenado
+      const token = localStorage.getItem('token');
+
+      // Función para verificar el token en el servidor
+      async function verifyToken() {
+        try {
+          if (!token) {
+            // Si no hay token, redirigir al login
+            window.location.href = '/login';
+            return;
+          }
+
+          // Verificar el token con el servidor
+          const response = await fetch('/api/auth/verify', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Token válido, guardar datos de usuario si están actualizados
+            if (data.user) {
+              localStorage.setItem('user', JSON.stringify(data.user));
+            }
+            // Redirigir al dashboard
+            window.location.href = '/dashboard';
+          } else {
+            // Token inválido, limpiar y redirigir al login
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+          }
+        } catch (error) {
+          console.error('Error al verificar sesión:', error);
+          // En caso de error, limpiar y redirigir al login
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
+      }
+
+      // Iniciar verificación
+      verifyToken();
+    </script>
+  </body>
+</html>

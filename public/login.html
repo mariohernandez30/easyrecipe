@@ -1,37 +1,85 @@
 <!doctype html>
-<html>
+<html lang="es">
   <head>
-    <title>Iniciar Sesión - EasyRecipe</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - EasyRecipe</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
-      <h2>¡Bienvenido de Nuevo!</h2>
-      <form action="/auth/login" method="POST">
-        <div class="form-group">
-          <label>Correo:</label>
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="Ingresa tu correo"
-          />
-        </div>
-        <div class="form-group">
-          <label>Contraseña:</label>
-          <input
-            type="password"
-            name="password"
-            required
-            placeholder="Ingresa tu contraseña"
-          />
-        </div>
-        <button type="submit">Iniciar Sesión</button>
-      </form>
-      <a href="/register.html" class="link"
-        >¿No tienes una cuenta? Regístrate</a
-      >
+      <div class="auth-container">
+        <h1>Iniciar Sesión</h1>
+
+        <div id="error-message" class="error-message"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+
+          <button type="submit" class="btn">Iniciar Sesión</button>
+        </form>
+
+        <p class="auth-link">
+          ¿No tienes cuenta? <a href="/register">Regístrate</a>
+        </p>
+      </div>
     </div>
+
+    <script>
+      // Verificar si ya hay un token JWT almacenado
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Redireccionar al dashboard si ya hay token
+        window.location.href = '/dashboard';
+      }
+
+      // Configurar envío del formulario
+      const loginForm = document.getElementById('login-form');
+      const errorDisplay = document.getElementById('error-message');
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        errorDisplay.textContent = '';
+
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Guardar token y datos de usuario
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            // Redireccionar al dashboard
+            window.location.href = '/dashboard';
+          } else {
+            errorDisplay.textContent =
+              data.message || 'Error al iniciar sesión';
+          }
+        } catch (error) {
+          console.error('Error en inicio de sesión:', error);
+          errorDisplay.textContent = 'Error de conexión, intente nuevamente';
+        }
+      });
+    </script>
   </body>
 </html>

@@ -8,6 +8,9 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      globals: {
+        Bun: 'readonly',
+      },
     },
     plugins: {
       prettier: prettierPlugin,
@@ -22,6 +25,7 @@ export default [
           tabWidth: 2,
           printWidth: 80,
           trailingComma: 'es5',
+          endOfLine: 'auto',
         },
       ],
     },
