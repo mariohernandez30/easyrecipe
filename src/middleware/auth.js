@@ -2,14 +2,14 @@ import jwt from 'jsonwebtoken';
 import { config } from '../setup.js';
 import { $try, log } from '../utils.js';
 
-export const generateToken = (user) => {
+export const generateToken = async (user) => {
   const payload = {
     id: user.id,
     username: user.username,
     email: user.email,
   };
 
-  const [error, token] = $try(() => {
+  const [error, token] = await $try(() => {
     return jwt.sign(payload, config.jwt.secret, {
       expiresIn: config.jwt.expiresIn,
     });

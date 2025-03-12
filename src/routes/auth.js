@@ -94,7 +94,7 @@ async function processLogin(userData) {
     };
   }
 
-  const token = generateToken(user);
+  const token = await generateToken(user);
 
   return {
     status: 200,

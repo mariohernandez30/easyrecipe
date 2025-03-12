@@ -5,21 +5,30 @@
   "scripts": {
     "lint": "bun eslint .",
     "lint:fix": "bun eslint . --fix",
-    "dev": "bun eslint . --fix && bun --watch src/index.js",
-    "start": "bun run src/index.js"
+    "dev:server": "bun --watch src/index.js",
+    "dev:client": "vite frontend",
+    "dev": "concurrently \"bun run dev:server\" \"bun run dev:client\"",
+    "build": "vite build frontend",
+    "start": "bun run build && bun run src/index.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
+    "@preact/signals": "^2.0.1",
     "bcrypt": "^5.1.1",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "preact": "^10.19.6",
+    "preact-router": "^4.1.2",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@preact/preset-vite": "^2.8.1",
+    "concurrently": "^9.1.2",
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
     "prettier": "^3.5.3",
+    "vite": "^5.2.2",
     "@types/bun": "latest"
   },
   "private": true,
