@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
+import { $try, log } from '../../shared/shared.js';
 import { config } from '../setup.js';
-import { $try, log } from '../utils.js';
 
 export const generateToken = async (user) => {
   const payload = {

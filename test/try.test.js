@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { $try } from '../src/utils.js';
+import { $try } from '../shared/shared.js';
 
 describe('Utilidad $try', () => {
   describe('Funciones sincrónicas', () => {

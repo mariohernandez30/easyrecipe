@@ -1,4 +1,4 @@
-import { $try, log } from '../utils.js';
+import { $try, log } from '../../shared/shared.js';
 import db from './dbConnection.js';
 
 export async function deleteUser(userId) {

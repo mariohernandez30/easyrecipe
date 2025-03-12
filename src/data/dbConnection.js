@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite';
 import fs from 'fs';
 import path from 'path';
-import { $try, log } from '../utils.js';
+import { $try, log } from '../../shared/shared.js';
 
 const dbDir = path.dirname('./db/users.sqlite');
 if (!fs.existsSync(dbDir)) {

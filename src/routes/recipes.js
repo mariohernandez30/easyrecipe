@@ -1,7 +1,7 @@
 import express from 'express';
+import { $try, log } from '../../shared/shared.js';
 import { verifyToken } from '../middleware/auth.js';
 import { generateRecipe } from '../services/recipeAI.js';
-import { $try, log } from '../utils.js';
 
 const router = express.Router();
 

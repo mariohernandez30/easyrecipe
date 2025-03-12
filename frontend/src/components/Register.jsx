@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
-import { $try } from '../utils/api';
+import { $try } from '../../shared/shared.js';
 import { AuthContext, auth } from './App';
 
 // Signals locales del componente

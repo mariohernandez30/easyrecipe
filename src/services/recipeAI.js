@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { $try, log } from '../utils.js';
+import { $try, log } from '../../shared/shared.js';
 
 const API_KEY = Bun.env.GOOGLE_AI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);

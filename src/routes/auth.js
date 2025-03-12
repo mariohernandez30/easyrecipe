@@ -1,9 +1,9 @@
 import express from 'express';
+import { $try, log } from '../../shared/shared.js';
 import { createUser } from '../data/userCreate.js';
 import { deleteUser } from '../data/userDelete.js';
 import { verifyUser } from '../data/userVerify.js';
 import { generateToken, verifyToken } from '../middleware/auth.js';
-import { $try, log } from '../utils.js';
 
 const router = express.Router();
 

@@ -1,22 +1,3 @@
-export async function $try(fn) {
-  try {
-    const result = fn();
-
-    if (result instanceof Promise) {
-      try {
-        const data = await result;
-        return [null, data];
-      } catch (err) {
-        return [err, null];
-      }
-    }
-
-    return [null, result];
-  } catch (error) {
-    return [error, null];
-  }
-}
-
 export async function fetchAPI(endpoint, options = {}) {
   const defaultOptions = {
     headers: {

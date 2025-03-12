@@ -1,11 +1,11 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { log } from '../shared/shared.js';
 import { initDatabase } from './data/initDb.js';
 import { authRoutes } from './routes/auth.js';
 import { recipeRoutes } from './routes/recipes.js';
 import { config } from './setup.js';
-import { log } from './utils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = Bun.env.NODE_ENV === 'production';
