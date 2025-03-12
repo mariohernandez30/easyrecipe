@@ -4,7 +4,6 @@ import { CREATE_USERS_TABLE } from './queries.js';
 
 export async function initDatabase() {
   const [error] = await $try(async () => {
-    // Ejecutar la creación de la tabla
     db.exec(CREATE_USERS_TABLE);
     log('Base de datos inicializada. Tabla de usuarios lista.');
   });

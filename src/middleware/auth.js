@@ -25,7 +25,6 @@ export const generateToken = (user) => {
 
 export const verifyToken = async (req, res, next) => {
   const [error] = await $try(async () => {
-    // Solo usamos el header de Authorization
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

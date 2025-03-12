@@ -5,7 +5,6 @@ import { INSERT_USER } from './queries.js';
 
 export async function createUser(username, email, password) {
   const [error, result] = await $try(async () => {
-    // Verificar si el usuario ya existe
     const userExists = await new Promise((resolve, reject) => {
       db.get(
         'SELECT username, email FROM users WHERE username = ? OR email = ?',
@@ -26,7 +25,6 @@ export async function createUser(username, email, password) {
       }
     }
 
-    // Si no existe, crear el usuario
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 

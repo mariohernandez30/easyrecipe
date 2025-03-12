@@ -62,7 +62,6 @@ function handleErrorResponse(res, error) {
   });
 }
 
-// Ruta para generar recetas (protegida con JWT)
 router.post('/generate', verifyToken, async (req, res) => {
   const [error] = await $try(async () => {
     const response = await processRecipeGeneration(req.body);

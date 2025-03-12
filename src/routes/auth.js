@@ -123,7 +123,6 @@ async function processDeleteAccount(userId) {
   };
 }
 
-// Rutas
 router.post('/register', async (req, res) => {
   const [error] = await $try(async () => {
     const response = await processRegister(req.body);

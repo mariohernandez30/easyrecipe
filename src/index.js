@@ -15,11 +15,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 
-// Cliente SPA (Single Page Application) routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });

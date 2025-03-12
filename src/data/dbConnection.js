@@ -3,22 +3,18 @@ import fs from 'fs';
 import path from 'path';
 import { $try, log } from '../utils.js';
 
-// Asegurarnos de que existe el directorio de la base de datos
 const dbDir = path.dirname('./db/users.sqlite');
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-// Usar la API nativa de Bun para SQLite
 const db = new Database('./db/users.sqlite', {
-  create: true, // Crear la base de datos si no existe
+  create: true,
 });
 
 log('Conectado a la base de datos SQLite usando Bun.Database');
 
-// Funciones auxiliares
 function adjustParams(params, callback) {
-  // Si params es función o array vacío y callback es función, ajustar parámetros
   if (typeof params === 'function') {
     return { params: [], callback: params };
   }
@@ -36,10 +32,8 @@ function adjustParams(params, callback) {
 
 function executeQuery(stmt, params) {
   if (Array.isArray(params)) {
-    // Para parámetros posicionales
     return stmt.run(...params);
   } else {
-    // Para parámetros nombrados
     return stmt.run(params);
   }
 }
@@ -52,7 +46,6 @@ function handleDatabaseError(error, callback, defaultValue = null) {
   throw error;
 }
 
-// Exportar objeto de base de datos con interfaz compatible
 export default {
   run: async (sql, params = [], callback) => {
     const { params: adjustedParams, callback: adjustedCallback } = adjustParams(
@@ -64,14 +57,12 @@ export default {
       const stmt = db.query(sql);
       const queryResult = executeQuery(stmt, adjustedParams);
 
-      // Crear un objeto de contexto similar al de sqlite3
       return {
         lastID: queryResult.lastInsertRowid || 0,
         changes: queryResult.changes || 0,
       };
     });
 
-    // Llamamos al callback con el contexto adecuado si existe
     if (typeof adjustedCallback === 'function') {
       if (error) {
         adjustedCallback(error);
@@ -103,7 +94,6 @@ export default {
       }
     });
 
-    // Llamar al callback con el resultado si existe
     if (typeof adjustedCallback === 'function') {
       if (error) {
         adjustedCallback(error, null);
@@ -135,7 +125,6 @@ export default {
       }
     });
 
-    // Llamar al callback con los resultados si existe
     if (typeof adjustedCallback === 'function') {
       if (error) {
         adjustedCallback(error, []);
@@ -151,7 +140,6 @@ export default {
     return rows || [];
   },
 
-  // Método para crear tablas y otros DDL
   exec: async (sql, callback) => {
     const [error] = await $try(async () => {
       db.run(sql);
