@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
-import { $try } from '../../shared/shared.js';
+import { $try } from '../../../shared/shared.js';
 import { AuthContext, auth } from './App';
 
 // Signals locales del componente
@@ -175,7 +175,21 @@ export function Register() {
                   fontSize: '1.2rem',
                 }}
               >
-                {passwordValidation.showPassword.value ? '👁️' : '👁️‍🗨️'}
+                {passwordValidation.showPassword.value ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                      fill="gold"
+                      d="M7,22H9V20H7V22zM11,22H13V20H11V22zM15,22H17V20H15V22zM12,2A1,1 0 0,1 13,3V6.25L18.29,11.54C18.68,11.16 19.22,10.95 19.79,10.95C20.82,10.95 21.69,11.82 21.69,12.85C21.69,13.89 20.82,14.75 19.79,14.75H17V17H7V14.75H4.21C3.18,14.75 2.31,13.89 2.31,12.85C2.31,11.82 3.18,10.95 4.21,10.95C4.78,10.95 5.32,11.16 5.71,11.54L11,6.25V3A1,1 0 0,1 12,2Z"
+                    />
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M7,22H9V20H7V22zM11,22H13V20H11V22zM15,22H17V20H15V22zM12,2A1,1 0 0,1 13,3V6.25L18.29,11.54C18.68,11.16 19.22,10.95 19.79,10.95C20.82,10.95 21.69,11.82 21.69,12.85C21.69,13.89 20.82,14.75 19.79,14.75H17V17H7V14.75H4.21C3.18,14.75 2.31,13.89 2.31,12.85C2.31,11.82 3.18,10.95 4.21,10.95C4.78,10.95 5.32,11.16 5.71,11.54L11,6.25V3A1,1 0 0,1 12,2Z"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
 

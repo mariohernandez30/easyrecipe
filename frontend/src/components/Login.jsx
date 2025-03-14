@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals';
 import { route } from 'preact-router';
 import { useContext, useEffect } from 'preact/hooks';
-import { $try } from '../../shared/shared.js';
+import { $try } from '../../../shared/shared.js';
 import { AuthContext, auth } from './App';
 
 // Signals locales del componente
@@ -119,7 +119,21 @@ export function Login() {
                   fontSize: '1.2rem',
                 }}
               >
-                {loginForm.showPassword.value ? '👁️' : '👁️‍🗨️'}
+                {loginForm.showPassword.value ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                      fill="gold"
+                      d="M9 21h6v-1H9v1zM12 2C8.13 2 5 5.13 5 9c0 3.86 3.14 7 7 7s7-3.14 7-7c0-3.87-3.13-7-7-7zM12 14c-2.76 0-5-2.24-5-5 0-0.55 0.45-1 1-1s1 0.45 1 1c0 1.66 1.34 3 3 3s3-1.34 3-3c0-0.55 0.45-1 1-1s1 0.45 1 1C17 11.76 14.76 14 12 14z"
+                    />
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M9 21h6v-1H9v1zM12 2C8.13 2 5 5.13 5 9c0 3.86 3.14 7 7 7s7-3.14 7-7c0-3.87-3.13-7-7-7zM12 14c-2.76 0-5-2.24-5-5 0-0.55 0.45-1 1-1s1 0.45 1 1c0 1.66 1.34 3 3 3s3-1.34 3-3c0-0.55 0.45-1 1-1s1 0.45 1 1C17 11.76 14.76 14 12 14z"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
           </div>

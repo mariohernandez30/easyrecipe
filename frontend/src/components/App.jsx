@@ -2,7 +2,7 @@ import { signal } from '@preact/signals';
 import { createContext } from 'preact';
 import { Router, route } from 'preact-router';
 import { useEffect } from 'preact/hooks';
-import { $try } from '../../shared/shared.js';
+import { $try } from '../../../shared/shared.js';
 
 import { Dashboard } from './Dashboard';
 import { Login } from './Login';
