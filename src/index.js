@@ -1,8 +1,8 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { log } from '../shared/shared.js';
 import { initDatabase } from './data/initDb.js';
+import { log } from './lib/utils.js';
 import { authRoutes } from './routes/auth.js';
 import { recipeRoutes } from './routes/recipes.js';
 import { config } from './setup.js';

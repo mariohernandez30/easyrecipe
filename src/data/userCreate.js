@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { $try, log } from '../../shared/shared.js';
+import { $try, log } from '../lib/utils.js';
 import db from './dbConnection.js';
 import { INSERT_USER } from './queries.js';
 

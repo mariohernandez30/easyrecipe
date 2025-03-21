@@ -1,5 +1,5 @@
 import express from 'express';
-import { $try, log } from '../../shared/shared.js';
+import { $try, log } from '../lib/utils.js';
 import { verifyToken } from '../middleware/auth.js';
 import { generateRecipe } from '../services/recipeAI.js';
 

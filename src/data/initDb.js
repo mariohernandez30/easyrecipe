@@ -1,4 +1,4 @@
-import { $try, log } from '../../shared/shared.js';
+import { $try, log } from '../lib/utils.js';
 import db from './dbConnection.js';
 import { CREATE_USERS_TABLE } from './queries.js';
 

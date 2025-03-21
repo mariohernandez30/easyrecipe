@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { $try, log } from '../../shared/shared.js';
+import { $try, log } from '../lib/utils.js';
 import { config } from '../setup.js';
 
 export const generateToken = async (user) => {
